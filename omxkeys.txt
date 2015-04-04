@@ -1,0 +1,8 @@
+EXIT:esc
+PAUSE:p
+#Note that this next line has a space after the :
+PAUSE: 
+REWIND:left
+SEEK_FORWARD_SMALL:r
+SEEK_BACK_SMALL:l
+EXIT:q
