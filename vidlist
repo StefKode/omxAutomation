@@ -1,12 +1,38 @@
 #!/usr/bin/python
+########################################################################################
+#
+# Copyright by Stefan Koch <StefanKoch@gmx.org>, 2015
+#
+# This file is part of omxAutomation
+#
+#    omxAutomation is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    omxAutomation is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+#
+########################################################################################
 
 import cgi, cgitb 
 import urllib
 import os
 
+#######################################################################################
+#Defines you need to adapt
+base             = '/mnt/video/'
+
+#######################################################################################
 print "Content-Type: text/html"
 print
 
+## get data from CGI
 form = cgi.FieldStorage() 
 
 # Get data from fields
@@ -14,6 +40,7 @@ chdir   = form.getvalue('chdir')
 lastpwd = form.getvalue('pwd')
 play    = form.getvalue('play')
 
+## set all variables to expected values
 if (chdir == None):
 	chdir = ''
 
@@ -29,6 +56,8 @@ if (chdir == "Unbekannt"):
 if (lastpwd == "Unbekannt"):
 	lastpwd = ''
 
+#######################################################################################
+## render page
 print '''
 <!DOCTYPE html>
 <html>
@@ -59,80 +88,60 @@ div {
 #dir {
     background-color: #222255;
 }
-.btn {
-  background: #34d95d;
-  background-image: -webkit-linear-gradient(top, #34d95d, #2bb82b);
-  background-image: -moz-linear-gradient(top, #34d95d, #2bb82b);
-  background-image: -ms-linear-gradient(top, #34d95d, #2bb82b);
-  background-image: -o-linear-gradient(top, #34d95d, #2bb82b);
-  background-image: linear-gradient(to bottom, #34d95d, #2bb82b);
-  -webkit-border-radius: 9;
-  -moz-border-radius: 9;
-  border-radius: 9px;
-  font-family: Arial;
-  color: #000000;
-  font-size: 20px;
-  padding: 20px 40px 20px 40px;
-  text-decoration: none;
-}
-.btn:hover {
-  background: #8cff00;
-  text-decoration: none;
-}
 </style>
 </head>
 <body>
 <h2>Raspberry Video List</h2>
 '''
 
-base='/mnt/video/'
+## this is the page entry enumerator
 idx=1
 
-#print("chdir = " + chdir + "<br>")
-#print("lastpwd = " + lastpwd + "<br>")
+## handle chdir request
 workpwd = lastpwd
 if (chdir != ''):
-	#print " chdir was hit "
 	if ((chdir == '__go_up__')):
-		#print " add .. "
+		## we dont allow .. but instead __go_up__ is told
+		## FIXME actually check for .. and filter out...
 		workpwd += "/../"
 	else:
-		#print " add " + chdir + " "
+		## normal decend into subdir
 		workpwd += '/' + chdir
 
+## cleanup paths
 workpwd = os.path.normpath(workpwd) 
 workdir = os.path.normpath(base + '/' + workpwd)
 
-#print workdir+'<br>'
-
-dirlist = os.listdir(workdir)
-
+#####################################################################################
+## header
 print('<div id=dir>')
-print('<a href=\"http://192.168.178.28:8080/cgi-bin/vidplay\">[Player]</a>'+ 
+print('<a href=\"/cgi-bin/vidplay\">[Player]</a>'+ 
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 
 if (workpwd != '.'):
-	print('<a href=\"http://192.168.178.28:8080/cgi-bin/vidlist\">[Home]</a>'+
+	print('<a href=\"/cgi-bin/vidlist\">[Home]</a>'+
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-	'<a href=\"http://192.168.178.28:8080/cgi-bin/vidlist?'+
+	'<a href=\"/cgi-bin/vidlist?'+
 	'chdir=' + urllib.quote('__go_up__', '')+'&'+
 	'pwd=' + urllib.quote(workpwd, '') + "\">[Zur&uuml;ck]</a>")
 
 print('</div><br>')
-	
+
+#####################################################################################
+## traverse directory and list items
+dirlist = os.listdir(workdir)
+
 for e in dirlist:
+	## ------------ now we display a directory entry ---------------------------
 	if (os.path.isdir(workdir + '/' + e)):
-		print('<div id=dir><a href=\"http://192.168.178.28:8080/cgi-bin/vidlist?'+
+		print('<div id=dir><a href=\"/cgi-bin/vidlist?'+
 			'chdir=' + urllib.quote(e, '')+'&'+
 			'pwd=' + urllib.quote(workpwd, '')+
 			'\">'+ str(idx)+ ' : '+e+'</a></div><br>')
 
+	## ------------ now we display a file entry ---------------------------
 	if (os.path.isfile(workdir + '/' + e)):
-#		print('<div><a href=\"http://192.168.178.28:8080/cgi-bin/vidlist?'+
-#			'play=' + urllib.quote(e, '')+'&'+
-#			'pwd=' + urllib.quote(workpwd, '')+
-#			'\">'+ str(idx)+ ' : '+e+'</a></div><br>')
-		print("<div><a href=\"http://192.168.178.28:8080/cgi-bin/vidplay?"+
+		print("<div><a href=\"/cgi-bin/vidplay?"+
 			"op=play&" +
 			"play=" + urllib.quote(e, '') + "&" +
 			"pwd="  + urllib.quote(workpwd, '') +
