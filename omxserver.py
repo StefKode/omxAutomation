@@ -16,18 +16,29 @@ def sigint_handler(signal, frame):
 	print("OMXServer will terminate (SIGINT)")
 	run = False
 
+def play_quit():
+	global playing
+	if (playing == 1):
+		print("QUIT PLAY, wait for termination")
+		omxproc.stdin.write('q')
+		while omxproc.poll() is None:
+			time.sleep(0.5)
+		print("Player has ended")
+		playing = 0
+
 def start_play(url):
 	global playing
 	global omxproc
-	if (playing == 0):
-		print("play "+url)
-		omxproc = subprocess.Popen(['/usr/bin/omxplayer', 
-				      '--key-config', '/home/stefan/bin/omxkeys.txt', 
-				      '--win', '1 1 1920 1080', 
-				      '-o','hdmi', 
-				      url],stdout=subprocess.PIPE,stdin=subprocess.PIPE)
-	#if (omxproc.returncode >= 0):
+	print url
+	if (playing == 1):
+		play_quit()
 	playing = 1
+	print("play "+url)
+	omxproc = subprocess.Popen(['/usr/bin/omxplayer', 
+			      '--key-config', '/home/stefan/bin/omxkeys.txt', 
+			      '--win', '1 1 1920 1080', 
+			      '-o','local', 
+			      url],stdout=subprocess.PIPE,stdin=subprocess.PIPE)
 
 def seek_fwd():
 	if (playing == 1):
@@ -43,16 +54,6 @@ def play_pause():
 	if (playing == 1):
 		print("PLAY/PAUSE")
 		omxproc.stdin.write(' ')
-
-def play_quit():
-	global playing
-	if (playing == 1):
-		print("QUIT PLAY, wait for termination")
-		omxproc.stdin.write('q')
-		while omxproc.poll() is None:
-			time.sleep(0.5)
-		print("Player has ended")
-		playing = 0
 
 def on_connect(client, userdata, flags, rc):
 	print("Connected with result code "+str(rc))
@@ -80,7 +81,7 @@ def on_message(client, userdata, msg):
 	if (len(message) == 2):
 		cmd = message[0]
 		arg = message[1]
-		#print("cmd="+cmd+" arg="+arg)
+		print("cmd="+cmd+" arg="+arg)
 		dispatch_message(cmd, arg)
 
 #######################################################################################

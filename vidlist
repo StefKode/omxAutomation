@@ -1,0 +1,153 @@
+#!/usr/bin/python
+
+import cgi, cgitb 
+import urllib
+import os
+
+print "Content-Type: text/html"
+print
+
+form = cgi.FieldStorage() 
+
+# Get data from fields
+chdir   = form.getvalue('chdir')
+lastpwd = form.getvalue('pwd')
+play    = form.getvalue('play')
+
+if (chdir == None):
+	chdir = ''
+
+if (lastpwd == None):
+	lastpwd = ''
+
+if (play == None):
+	play = ''
+
+if (chdir == "Unbekannt"):
+	chdir = ''
+
+if (lastpwd == "Unbekannt"):
+	lastpwd = ''
+
+print '''
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raspberry Video List</title>
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">
+<style type=\"text/css\">
+BODY
+   {
+   color:#3EF700;
+   background-color:black;
+   font-family:sans-serif;
+   font-size: 150%;
+   }
+A:link{
+	color:white;
+	text-decoration:none;
+}
+A:visited{
+	color:white;
+	text-decoration:none;
+}
+div {
+    background-color: #333333;
+    padding: 20px 0px 20px 10px;
+}
+div:hover {
+    background-color: #8cff00;
+    padding: 20px 0px 20px 10px;
+}
+#dir {
+    background-color: #222255;
+}
+#dir:hover {
+    background-color: #4444aa;
+    padding: 20px 0px 20px 10px;
+}
+.btn {
+  background: #34d95d;
+  background-image: -webkit-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: -moz-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: -ms-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: -o-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: linear-gradient(to bottom, #34d95d, #2bb82b);
+  -webkit-border-radius: 9;
+  -moz-border-radius: 9;
+  border-radius: 9px;
+  font-family: Arial;
+  color: #000000;
+  font-size: 20px;
+  padding: 20px 40px 20px 40px;
+  text-decoration: none;
+}
+.btn:hover {
+  background: #8cff00;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+<h2>Raspberry Video List</h2>
+'''
+
+base='/mnt/video/'
+idx=1
+
+#print("chdir = " + chdir + "<br>")
+#print("lastpwd = " + lastpwd + "<br>")
+workpwd = lastpwd
+if (chdir != ''):
+	#print " chdir was hit "
+	if ((chdir == '__go_up__')):
+		#print " add .. "
+		workpwd += "/../"
+	else:
+		#print " add " + chdir + " "
+		workpwd += '/' + chdir
+
+workpwd = os.path.normpath(workpwd) 
+workdir = os.path.normpath(base + '/' + workpwd)
+
+#print workdir+'<br>'
+
+dirlist = os.listdir(workdir)
+
+print('<div id=dir>')
+print('<a href=\"http://192.168.178.28:8080/cgi-bin/vidplay\">[Player]</a>'+ 
+	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+
+if (workpwd != '.'):
+	print('<a href=\"http://192.168.178.28:8080/cgi-bin/vidlist\">[Home]</a>'+
+	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+	'<a href=\"http://192.168.178.28:8080/cgi-bin/vidlist?'+
+	'chdir=' + urllib.quote('__go_up__', '')+'&'+
+	'pwd=' + urllib.quote(workpwd, '') + "\">[Zur&uuml;ck]</a>")
+
+print('</div><br>')
+	
+for e in dirlist:
+	if (os.path.isdir(workdir + '/' + e)):
+		print('<div id=dir><a href=\"http://192.168.178.28:8080/cgi-bin/vidlist?'+
+			'chdir=' + urllib.quote(e, '')+'&'+
+			'pwd=' + urllib.quote(workpwd, '')+
+			'\">'+ str(idx)+ ' : '+e+'</a></div><br>')
+
+	if (os.path.isfile(workdir + '/' + e)):
+#		print('<div><a href=\"http://192.168.178.28:8080/cgi-bin/vidlist?'+
+#			'play=' + urllib.quote(e, '')+'&'+
+#			'pwd=' + urllib.quote(workpwd, '')+
+#			'\">'+ str(idx)+ ' : '+e+'</a></div><br>')
+		print("<div><a href=\"http://192.168.178.28:8080/cgi-bin/vidplay?"+
+			"op=play&" +
+			"play=" + urllib.quote(e, '') + "&" +
+			"pwd="  + urllib.quote(workpwd, '') +
+			"\">"+ str(idx)+ ' : ' + e + '</a></div><br>' )
+	idx += 1
+
+print '''
+</body>
+</html>
+'''
+

@@ -1,0 +1,125 @@
+#!/usr/bin/python
+
+import cgi, cgitb 
+import paho.mqtt.client as mqtt
+import os
+import urllib
+
+base = '/mnt/video/'
+print "Content-Type: text/html"
+print
+
+form = cgi.FieldStorage() 
+
+# Get data from fields
+op      = form.getvalue('op')
+playurl = form.getvalue('play')
+playpwd = form.getvalue('pwd')
+
+if (playurl == None):
+	playurl="Unbekannt"
+if (playpwd == None):
+	playpwd="Unbekannt"
+
+url = os.path.normpath(base + "/" + playpwd + "/" + playurl)
+
+def send(op):
+	if (op == "play"):
+		mqttc.publish("/omxserver/play", "play," + base + "/" + playpwd + "/" + playurl)
+		return
+	if (op == "back"):
+		mqttc.publish("/omxserver/play", "back,0")
+		return
+	if (op == "fwd"):
+		mqttc.publish("/omxserver/play", "fwd,0")
+		return
+	if (op == "playpause"):
+		mqttc.publish("/omxserver/play", "playpause,0")
+		return
+	if (op == "quit"):
+		mqttc.publish("/omxserver/play", "quit,0")
+		return
+
+if (op == None):
+	op="not set"
+else:
+	mqttc = mqtt.Client()
+	mqttc.connect("192.168.2.100", 1883)
+	if (op == "list"):
+		listmovies()
+	else:
+		send(op)
+	mqttc.loop(2)
+
+print '''
+<!DOCTYPE html>
+<html>
+<head>
+<title>Raspberry Video Player</title>
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">
+<style type=\"text/css\">
+BODY
+   {
+   color:#3EF700;
+   background-color:black;
+   font-family:sans-serif;
+   }
+A:link{color:black}
+A:visited{color:black}
+.btn {
+  background: #34d95d;
+  background-image: -webkit-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: -moz-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: -ms-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: -o-linear-gradient(top, #34d95d, #2bb82b);
+  background-image: linear-gradient(to bottom, #34d95d, #2bb82b);
+  -webkit-border-radius: 9;
+  -moz-border-radius: 9;
+  border-radius: 9px;
+  font-family: Arial;
+  color: #000000;
+  font-size: 20px;
+  padding: 20px 40px 20px 40px;
+  text-decoration: none;
+}
+.btn:hover {
+  background: #8cff00;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+<h2>Raspberry Video Control</h2>'''
+
+#print("/omxserver/play" + " play," + base + "/" + playpwd + "/" + playurl + "<br>")
+print(playurl + "<br><br><br>")
+
+print("<a href=\"/cgi-bin/vidplay?op=back&" +
+	"play=" + urllib.quote(playurl, '') + "&" +
+	"pwd="  + urllib.quote(playpwd, '') +
+	"\" class=btn>&lt;&lt;</a>")
+
+print("<a href=\"/cgi-bin/vidplay?op=playpause&" +
+	"play=" + urllib.quote(playurl, '') + "&" +
+	"pwd="  + urllib.quote(playpwd, '') +
+	"\" class=btn>II&gt;&gt;</a>")
+
+print("<a href=\"/cgi-bin/vidplay?op=fwd&" +
+	"play=" + urllib.quote(playurl, '') + "&" +
+	"pwd="  + urllib.quote(playpwd, '') + 
+	"\" class=btn>&gt;&gt;</a><br><br><br><br>")
+
+print("<a href=\"/cgi-bin/vidplay?op=quit&" + 
+	"play=" + urllib.quote(playurl, '') + "&" +
+	"pwd="  + urllib.quote(playpwd, '') +
+	"\" class=btn>Video beenden</a><br><br><br><br>")
+
+print("<a href=\"/cgi-bin/vidlist?pwd=.&" + 
+	"chdir=" + urllib.quote(playpwd, '') + 
+	"\" class=btn>Liste Filme</a><br><br><br><br>")
+
+print '''
+</body>
+</html>
+'''
+
