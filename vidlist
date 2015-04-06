@@ -35,6 +35,7 @@ print '''
 <head>
 <title>Raspberry Video List</title>
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">
+<meta name=\"mobile-web-app-capable\" content=\"yes\">
 <style type=\"text/css\">
 BODY
    {
@@ -55,16 +56,8 @@ div {
     background-color: #333333;
     padding: 20px 0px 20px 10px;
 }
-div:hover {
-    background-color: #8cff00;
-    padding: 20px 0px 20px 10px;
-}
 #dir {
     background-color: #222255;
-}
-#dir:hover {
-    background-color: #4444aa;
-    padding: 20px 0px 20px 10px;
 }
 .btn {
   background: #34d95d;
