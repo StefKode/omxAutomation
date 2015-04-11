@@ -139,7 +139,7 @@ for e in dirlist:
         print('<div id=dir><a href=\"/cgi-bin/vidlist?'+
             'chdir=' + urllib.quote(e, '')+'&'+
             'pwd=' + urllib.quote(workpwd, '')+
-        	'\">'+ str(idx)+ ' : '+ tmp_entry +'</a></div><br>')
+        	'\">'+ str(idx)+ ' : '+ e +'</a></div><br>')
 
     ## ------------ now we display a file entry ---------------------------
     if (os.path.isfile(workdir + '/' + e)):
@@ -147,7 +147,7 @@ for e in dirlist:
             "op=play&" +
             "play=" + urllib.quote(e, '') + "&" +
             "pwd="  + urllib.quote(workpwd, '') +
-            "\">"+ str(idx)+ ' : ' + tmp_entry + '</a></div><br>' )
+            "\">"+ str(idx)+ ' : ' + e + '</a></div><br>' )
         idx += 1
 
 print '''
