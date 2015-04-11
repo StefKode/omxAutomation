@@ -29,6 +29,12 @@ import os
 #Defines you need to adapt
 base = '/mnt/video/'
 
+##----messages
+msg_back_utf8 = u'Zur\xc3\xbcck'
+
+##----encode messages
+msg_back = msg_back_utf8.encode('ascii', 'xmlcharrefreplace')
+
 #######################################################################################
 print "Content-Type: text/html"
 print
@@ -58,23 +64,13 @@ if (lastpwd == "Unbekannt"):
     lastpwd = ''
 
 #######################################################################################
-#simple html encoder
-html_escape_table = {
-    "ä": "&auml;",
-    "\xc3\xbc": "&uuml;",
-    "ö": "&ouml;",
-}
-
-def html_encode(text):
-    return "".join(html_escape_table.get(c,c) for c in text)
-
-#######################################################################################
 ## render page
 print '''
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
 <title>Raspberry Video List</title>
+<meta charset=\"utf-8\">
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">
 <meta name=\"mobile-web-app-capable\" content=\"yes\">
 <style type=\"text/css\">
@@ -135,7 +131,7 @@ if (workpwd != '.'):
     '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
     '<a href=\"/cgi-bin/vidlist?'+
     'chdir=' + urllib.quote('__go_up__', '')+'&'+
-    'pwd=' + urllib.quote(workpwd, '') + "\">[" + html_encode("Zur\xc3\xbcck") + "]</a>")
+    'pwd=' + urllib.quote(workpwd, '') + "\">[]</a>")
 
 print('</div><br>')
 
@@ -146,18 +142,22 @@ dirlist = os.listdir(workdir)
 for e in dirlist:
     ## ------------ now we display a directory entry ---------------------------
     if (os.path.isdir(workdir + '/' + e)):
+	tmp_entry = e.encode('ascii', 'xmlcharrefreplace')
+
         print('<div id=dir><a href=\"/cgi-bin/vidlist?'+
             'chdir=' + urllib.quote(e, '')+'&'+
             'pwd=' + urllib.quote(workpwd, '')+
-        	'\">'+ str(idx)+ ' : '+ html_encode(e) +'</a></div><br>')
+        	'\">'+ str(idx)+ ' : '+ tmp_entry +'</a></div><br>')
 
     ## ------------ now we display a file entry ---------------------------
     if (os.path.isfile(workdir + '/' + e)):
+	tmp_entry = e.encode('ascii', 'xmlcharrefreplace')
+
         print("<div><a href=\"/cgi-bin/vidplay?"+
             "op=play&" +
             "play=" + urllib.quote(e, '') + "&" +
             "pwd="  + urllib.quote(workpwd, '') +
-            "\">"+ str(idx)+ ' : ' + html_encode(e) + '</a></div><br>' )
+            "\">"+ str(idx)+ ' : ' + tmp_entry + '</a></div><br>' )
         idx += 1
 
 print '''
