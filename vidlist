@@ -27,7 +27,7 @@ import os
 
 #######################################################################################
 #Defines you need to adapt
-base             = '/mnt/video/'
+base = '/mnt/video/'
 
 #######################################################################################
 print "Content-Type: text/html"
@@ -43,26 +43,26 @@ play    = form.getvalue('play')
 
 ## set all variables to expected values
 if (chdir == None):
-	chdir = ''
+    chdir = ''
 
 if (lastpwd == None):
-	lastpwd = ''
+    lastpwd = ''
 
 if (play == None):
-	play = ''
+    play = ''
 
 if (chdir == "Unbekannt"):
-	chdir = ''
+    chdir = ''
 
 if (lastpwd == "Unbekannt"):
-	lastpwd = ''
+    lastpwd = ''
 
 #######################################################################################
 #simple html encoder
 html_escape_table = {
-    "ä": "&auml;",
-    "ü": "&uuml;",
-    "ö": "&ouml;",
+    "Ã¤": "&auml;",
+    "Ã¼": "&uuml;",
+    "Ã¶": "&ouml;",
 }
 
 def html_encode(text):
@@ -112,13 +112,13 @@ idx=1
 ## handle chdir request
 workpwd = lastpwd
 if (chdir != ''):
-	if ((chdir == '__go_up__')):
-		## we dont allow .. but instead __go_up__ is told
-		## FIXME actually check for .. and filter out...
-		workpwd += "/../"
-	else:
-		## normal decend into subdir
-		workpwd += '/' + chdir
+    if ((chdir == '__go_up__')):
+        ## we dont allow .. but instead __go_up__ is told
+        ## FIXME actually check for .. and filter out...
+        workpwd += "/../"
+    else:
+        ## normal decend into subdir
+        workpwd += '/' + chdir
 
 ## cleanup paths
 workpwd = os.path.normpath(workpwd) 
@@ -128,14 +128,14 @@ workdir = os.path.normpath(base + '/' + workpwd)
 ## header
 print('<div id=dir>')
 print('<a href=\"/cgi-bin/vidplay\">[Player]</a>'+ 
-	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
+    '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')
 
 if (workpwd != '.'):
-	print('<a href=\"/cgi-bin/vidlist\">[Home]</a>'+
-	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-	'<a href=\"/cgi-bin/vidlist?'+
-	'chdir=' + urllib.quote('__go_up__', '')+'&'+
-	'pwd=' + urllib.quote(workpwd, '') + "\">[" + html_encode("Zurück") + "]</a>")
+    print('<a href=\"/cgi-bin/vidlist\">[Home]</a>'+
+    '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+    '<a href=\"/cgi-bin/vidlist?'+
+    'chdir=' + urllib.quote('__go_up__', '')+'&'+
+    'pwd=' + urllib.quote(workpwd, '') + "\">[" + html_encode("Zurï¿½ck") + "]</a>")
 
 print('</div><br>')
 
@@ -144,21 +144,21 @@ print('</div><br>')
 dirlist = os.listdir(workdir)
 
 for e in dirlist:
-	## ------------ now we display a directory entry ---------------------------
-	if (os.path.isdir(workdir + '/' + e)):
-		print('<div id=dir><a href=\"/cgi-bin/vidlist?'+
-			'chdir=' + urllib.quote(e, '')+'&'+
-			'pwd=' + urllib.quote(workpwd, '')+
-			'\">'+ str(idx)+ ' : '+ html_encode(e) +'</a></div><br>')
+    ## ------------ now we display a directory entry ---------------------------
+    if (os.path.isdir(workdir + '/' + e)):
+        print('<div id=dir><a href=\"/cgi-bin/vidlist?'+
+            'chdir=' + urllib.quote(e, '')+'&'+
+            'pwd=' + urllib.quote(workpwd, '')+
+        	'\">'+ str(idx)+ ' : '+ html_encode(e) +'</a></div><br>')
 
-	## ------------ now we display a file entry ---------------------------
+    ## ------------ now we display a file entry ---------------------------
 	if (os.path.isfile(workdir + '/' + e)):
-		print("<div><a href=\"/cgi-bin/vidplay?"+
-			"op=play&" +
-			"play=" + urllib.quote(e, '') + "&" +
-			"pwd="  + urllib.quote(workpwd, '') +
-			"\">"+ str(idx)+ ' : ' + html_encode(e) + '</a></div><br>' )
-	idx += 1
+        print("<div><a href=\"/cgi-bin/vidplay?"+
+            "op=play&" +
+            "play=" + urllib.quote(e, '') + "&" +
+            "pwd="  + urllib.quote(workpwd, '') +
+            "\">"+ str(idx)+ ' : ' + html_encode(e) + '</a></div><br>' )
+        idx += 1
 
 print '''
 </body>
