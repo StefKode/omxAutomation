@@ -135,7 +135,7 @@ if (workpwd != '.'):
     '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
     '<a href=\"/cgi-bin/vidlist?'+
     'chdir=' + urllib.quote('__go_up__', '')+'&'+
-    'pwd=' + urllib.quote(workpwd, '') + "\">[" + html_encode("Zur�ck") + "]</a>")
+    'pwd=' + urllib.quote(workpwd, '') + "\">[" + html_encode("Zurück") + "]</a>")
 
 print('</div><br>')
 
