@@ -152,7 +152,7 @@ for e in dirlist:
         	'\">'+ str(idx)+ ' : '+ html_encode(e) +'</a></div><br>')
 
     ## ------------ now we display a file entry ---------------------------
-	if (os.path.isfile(workdir + '/' + e)):
+    if (os.path.isfile(workdir + '/' + e)):
         print("<div><a href=\"/cgi-bin/vidplay?"+
             "op=play&" +
             "play=" + urllib.quote(e, '') + "&" +
