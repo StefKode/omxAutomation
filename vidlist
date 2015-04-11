@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 ########################################################################################
 #
 # Copyright by Stefan Koch <StefanKoch@gmx.org>, 2015
@@ -55,6 +56,17 @@ if (chdir == "Unbekannt"):
 
 if (lastpwd == "Unbekannt"):
 	lastpwd = ''
+
+#######################################################################################
+#simple html encoder
+html_escape_table = {
+    "ä": "&auml;",
+    "ü": "&uuml;",
+    "ö": "&ouml;",
+}
+
+def html_encode(text):
+    return "".join(html_escape_table.get(c,c) for c in text)
 
 #######################################################################################
 ## render page
@@ -123,7 +135,7 @@ if (workpwd != '.'):
 	'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
 	'<a href=\"/cgi-bin/vidlist?'+
 	'chdir=' + urllib.quote('__go_up__', '')+'&'+
-	'pwd=' + urllib.quote(workpwd, '') + "\">[Zur&uuml;ck]</a>")
+	'pwd=' + urllib.quote(workpwd, '') + "\">[" + html_encode("Zurück") + "]</a>")
 
 print('</div><br>')
 
@@ -137,7 +149,7 @@ for e in dirlist:
 		print('<div id=dir><a href=\"/cgi-bin/vidlist?'+
 			'chdir=' + urllib.quote(e, '')+'&'+
 			'pwd=' + urllib.quote(workpwd, '')+
-			'\">'+ str(idx)+ ' : '+e+'</a></div><br>')
+			'\">'+ str(idx)+ ' : '+ html_encode(e) +'</a></div><br>')
 
 	## ------------ now we display a file entry ---------------------------
 	if (os.path.isfile(workdir + '/' + e)):
@@ -145,7 +157,7 @@ for e in dirlist:
 			"op=play&" +
 			"play=" + urllib.quote(e, '') + "&" +
 			"pwd="  + urllib.quote(workpwd, '') +
-			"\">"+ str(idx)+ ' : ' + e + '</a></div><br>' )
+			"\">"+ str(idx)+ ' : ' + html_encode(e) + '</a></div><br>' )
 	idx += 1
 
 print '''
